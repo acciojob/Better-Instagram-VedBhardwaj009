@@ -1,22 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="script.js " defer></script>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
-    <title>Better Instagram</title>
+    <title>Arrange Images by Drag and Drop</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h1 {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .flex {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .image {
+        height: 300px;
+        width: 200px;
+        border: 2px solid #555;
+        background-size: cover;
+        background-position: center;
+        cursor: grab;
+        text-align: center;
+        font-weight: bold;
+        color: white;
+        text-shadow: 1px 1px 2px black;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+      }
+
+      .drag-over {
+        border: 2px dashed #00c3ff;
+      }
+    </style>
   </head>
   <body>
-    <h1 style="text-align: center">Arrange Images by drag and drop</h1>
+    <h1>Arrange Images by Drag and Drop</h1>
     <div class="flex" id="parent">
-      <div draggable="true" class="image" >Image 1</div>
-      <div draggable="true" class="image" >Image 2</div>
-      <div draggable="true" class="image" >Image 3</div>
-      <div draggable="true" class="image" >Image 4</div>
-      <div draggable="true" class="image" >Image 5</div>
-      <div draggable="true" class="image" >Image 6</div>
+      <div draggable="true" class="image" id="div1" style="background-image: url('https://picsum.photos/id/237/200/300');">Image 1</div>
+      <div draggable="true" class="image" id="div2" style="background-image: url('https://picsum.photos/seed/picsum/200/300');">Image 2</div>
+      <div draggable="true" class="image" id="div3" style="background-image: url('https://picsum.photos/200/300?grayscale');">Image 3</div>
+      <div draggable="true" class="image" id="div4" style="background-image: url('https://picsum.photos/200/300/');">Image 4</div>
+      <div draggable="true" class="image" id="div5" style="background-image: url('https://picsum.photos/200/300.jpg');">Image 5</div>
+      <div draggable="true" class="image" id="div6" style="background-image: url('https://picsum.photos/id/102/200/300');">Image 6</div>
     </div>
+    <script>
+      const parent = document.getElementById("parent");
+      let draggedElement = null;
+
+      parent.addEventListener("dragstart", (e) => {
+        if (e.target.classList.contains("image")) {
+          draggedElement = e.target;
+          setTimeout(() => {
+            e.target.style.visibility = "hidden";
+          }, 0);
+        }
+      });
+
+      parent.addEventListener("dragend", (e) => {
+        if (draggedElement) {
+          draggedElement.style.visibility = "visible";
+          draggedElement = null;
+        }
+      });
+
+      parent.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        const target = e.target;
+        if (target.classList.contains("image") && target !== draggedElement) {
+          target.classList.add("drag-over");
+        }
+      });
+
+      parent.addEventListener("dragleave", (e) => {
+        const target = e.target;
+        if (target.classList.contains("image")) {
+          target.classList.remove("drag-over");
+        }
+      });
+
+      parent.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const target = e.target;
+        if (draggedElement && target.classList.contains("image") && draggedElement !== target) {
+          target.classList.remove("drag-over");
+
+          // Swap the background images
+          const draggedStyle = draggedElement.style.backgroundImage;
+          draggedElement.style.backgroundImage = target.style.backgroundImage;
+          target.style.backgroundImage = draggedStyle;
+
+          // Swap the text content
+          const draggedText = draggedElement.textContent;
+          draggedElement.textContent = target.textContent;
+          target.textContent = draggedText;
+        }
+      });
+    </script>
   </body>
 </html>
